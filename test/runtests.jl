@@ -1,6 +1,8 @@
 using ElasticSearch
-using Test
+using Test, JSON
 
 @testset "ElasticSearch.jl" begin
-    # Write your tests here.
+    es = ES(user = "elastic", password = "elastic")
+    @test es.url == "http://elastic:elastic@localhost:9200"
+    @test [["a", "b"] |> SourceBlock] |> Query |> JSON.json == """{"_source":["a","b"]}"""
 end
