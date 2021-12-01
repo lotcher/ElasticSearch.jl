@@ -10,7 +10,7 @@ julia> ]
 pkg> add https://github.com/lotcher/ElasticSearch.jl.git
 ```
 
-## usage
+## Usage
 
 Before using all methods, you need to create an ES instance, like this
 
@@ -18,7 +18,8 @@ Before using all methods, you need to create an ES instance, like this
 using ElasticSearch
 es = ES()  # ES("http://:@localhost:9200")
 
-# You can use this method: ES(; host, port, user, password, protocol) to construct the client you need, or directly pass in the complete URL like ES("https://elastic:elastic@localhost:9300")
+# You can use this method: ES(; host, port, user, password, protocol) to construct the client you need
+# Or directly pass in the complete URL like ES("https://elastic:elastic@localhost:9300")
 ```
 
 ### search
@@ -26,28 +27,29 @@ es = ES()  # ES("http://:@localhost:9200")
 You can use the **search** method to pass in JSON, Dict or built-in query objects
 
 ```julia
-search(es, 'index', "{}")  # be equal to GET /index/_search  body={}
+search(es, 'index', "{}")  # be equal to GET /index/_search  body="{}"
 
-# You can also pass in other objects
+# You can also pass in other methods
 # search(es, 'index', Dict())
 # search(es, 'index', Query([]))
 ```
 
-However, when you use complex query statements, it is recommended to use query, as shown below
+However, when you use complex query statements, it is recommended to use Query, as shown below
 
 ```Julia	
 search(es=es, index="news") do
+	[
+        FromBlock(0),
+        SizeBlock(10),
         [
-            FromBlock(0),
-            SizeBlock(10),
-            [
-                RangeBody("correlation", Dict("gte"=>0.5)),
-                RangeBody("emotion", Dict("gte"=>0.5)),
-                MultiMatchBody(["contents","title"], "test")
-            ] |> MustQueryBlock,
-            HighlightBlock(["contents","title"]),
-            SourceBlock(["img_urls","id","time","title","url"])
-        ] |> Query
+            RangeBody("correlation", Dict("gte"=>0.5)),
+            RangeBody("emotion", Dict("gte"=>0.5)),
+            MultiMatchBody(["contents","title"], "test")
+        ] |> MustQueryBlock,
+        HighlightBlock(["contents","title"]),
+        SourceBlock(["img_urls","id","time","title","url"])
+    ] |> Query
+end
 ```
 
 It is equivalent to constructing the following query statements. 
@@ -88,8 +90,8 @@ GET news/_Search
   },
   "highlight": {
     "fields": {
-      "correlation": {},
-      "emotion": {}
+      "contents": {},
+      "title": {}
     }
   },
   "_source": [
