@@ -18,7 +18,6 @@ struct RangeBody <: FilterBody
 end
 JSON.lower(rb::RangeBody) = Dict("range" => Dict(rb.field => rb.range))
 
-
 struct MultiMatchBody <: FilterBody
     fields::Vector{String}
     query::String
@@ -26,11 +25,20 @@ end
 JSON.lower(mm::MultiMatchBody) =
     Dict("multi_match" => Dict("fields" => mm.fields, "query" => mm.query))
 
+struct TermsBody <: FilterBody
+    field::String
+    values::Vector
+    TermsBody(field, values::Vector) = new(field, values)
+    TermsBody(field, value::Union{String, Number}) = new(field, [value])
+end
+JSON.lower(tb::TermsBody) = Dict("terms"=>Dict(tb.field=>tb.values))
 
 abstract type Block end
 
 struct MustQueryBlock <: Block
     bodys::Vector{FilterBody}
+    MustQueryBlock(bodys::Vector{FilterBody}) = new(bodys)
+    MustQueryBlock(body::FilterBody) = new([body])
 end
 JSON.lower(mq::MustQueryBlock) = Dict("bool" => Dict("must" => mq.bodys))
 
@@ -59,17 +67,20 @@ JSON.lower(sb::SizeBlock) = sb.size
 struct SortBody
     field::String
     order::String
-    SortBody(field, ascending::Bool=true) = new(field, ascending ? "asc" : "desc")
+    SortBody(field, ascending::Bool = true) =
+        new(field, ascending ? "asc" : "desc")
 end
-JSON.lower(sb::SortBody) = Dict(sb.field=>Dict("order"=>sb.order))
+JSON.lower(sb::SortBody) = Dict(sb.field => Dict("order" => sb.order))
 struct SortBlock <: Block
-    bodys::Vector{SortBody}
+    bodys::Vector{Union{SortBody,String}}
 end
-JSON.lower(sb::SortBlock) =sb.bodys
+JSON.lower(sb::SortBlock) = sb.bodys
 
 
 struct Query
     blocks::Vector{Block}
+    Query(blocks::Vector{Block}) = new(blocks)
+    Query(block::Block) = new([blocks])
 end
 JSON.lower(q::Query) = begin
     Dict(
