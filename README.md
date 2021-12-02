@@ -24,7 +24,7 @@ es = ES()  # ES("http://:@localhost:9200")
 
 ### search
 
-You can use the **search** method to pass in JSON, Dict or built-in query objects
+You can use the **search** method to pass in JSON, Dict or built-in Query objects
 
 ```julia
 search(es, 'index', "{}")  # be equal to GET /index/_search  body="{}"
@@ -36,7 +36,7 @@ search(es, 'index', "{}")  # be equal to GET /index/_search  body="{}"
 
 However, when you use complex query statements, it is recommended to use Query, as shown below
 
-```Julia	
+```Julia
 search(es=es, index="news") do
 	[
         FromBlock(0),
@@ -52,7 +52,7 @@ search(es=es, index="news") do
 end
 ```
 
-It is equivalent to constructing the following query statements. 
+It is equivalent to constructing the following query statements.
 
 ```json
 GET news/_Search
@@ -105,4 +105,3 @@ GET news/_Search
 ```
 
 Similarly, you can also construct any ES DSL statements with built-in objects
-

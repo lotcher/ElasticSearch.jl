@@ -7,6 +7,7 @@ const BlockNames = Dict(
     :SourceBlock => "_source",
     :FromBlock => "from",
     :SizeBlock => "size",
+    :SortBlock => "sort"
 )
 
 abstract type FilterBody end
@@ -53,6 +54,18 @@ struct SizeBlock <: Block
     size::Integer
 end
 JSON.lower(sb::SizeBlock) = sb.size
+
+
+struct SortBody
+    field::String
+    order::String
+    SortBody(field, ascending::Bool=true) = new(field, ascending ? "asc" : "desc")
+end
+JSON.lower(sb::SortBody) = Dict(sb.field=>Dict("order"=>sb.order))
+struct SortBlock <: Block
+    bodys::Vector{SortBody}
+end
+JSON.lower(sb::SortBlock) =sb.bodys
 
 
 struct Query
