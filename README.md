@@ -3,11 +3,11 @@
 
 ## Installation
 
-This package is not currently registered in the [`General`](https://github.com/JuliaRegistries/General)，so you must use github repository address to install
+This package is registered in the  [`General`](https://github.com/JuliaRegistries/General) registry，so you can install it by package name or GitHub address.
 
 ```julia
 julia> ]
-pkg> add https://github.com/lotcher/ElasticSearch.jl.git
+pkg> add ElasticSearch  # add https://github.com/lotcher/ElasticSearch.jl.git
 ```
 
 ## Usage
